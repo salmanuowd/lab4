@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+int main() {
+    FILE *inputFile, *outputFile;
+    char buffer[100];
+    float value;
+    int invalidCount = 0;
+    inputFile = fopen("data.txt", "r");
+    if (inputFile == NULL) {
+        printf("Error: Could not open input file.\n");
+        return 1;
+    }
+    outputFile = fopen("output.txt", "w");
+    if (outputFile == NULL) {
+        printf("Error: Could not open output file.\n");
+        fclose(inputFile);
+        return 1;
+    }
+    fseek(inputFile, 0, SEEK_END);
+    if (ftell(inputFile) == 0) {
+        printf("Error: Input file is empty.\n");
+        fclose(inputFile);
+        fclose(outputFile);
+        return 1;
+    }
+    rewind(inputFile); 
+    while (!feof(inputFile)) {
+        if (fscanf(inputFile, "%s", buffer) == 1) {
+            char *endPtr;
+            value = strtof(buffer, &endPtr);
+
+            if (*endPtr == '\0') { 
+                fprintf(outputFile, "%.2f\n", value);
+            } else { 
+                invalidCount++;
+            }
+        }
+    }
+    fclose(inputFile);
+    fclose(outputFile);
+    printf("File processing complete.\n");
+    printf("Number of invalid values: %d\n", invalidCount);
+
+    return 0;
+}
